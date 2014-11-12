@@ -25,6 +25,8 @@ public class GamePad : MonoBehaviour
 
         transform.position += transform.forward * Time.deltaTime * Input.GetAxis("Vertical") * Speed;
         transform.position += transform.right * Time.deltaTime * Input.GetAxis("Horizontal") * Speed;
+
+        if (transform.position.y < 1) transform.position = new Vector3(transform.position.x, 1, transform.position.z);
     }
 }
 
