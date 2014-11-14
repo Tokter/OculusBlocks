@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
+using System.Linq;
 using System.Collections;
-using SimpleJSON;
+using UnityEditor;
 
 public enum Sides
 {
@@ -10,24 +11,20 @@ public enum Sides
 public class BlockBuilder : MonoBehaviour
 {
     public Transform Block;
+    public Transform Selection;
     public int NumberOfStacks = 4;
     public float DistanceBetweenStacks = 2.0f;
     public int StackHeight = 10;
     public float RotationVariation = 1.0f;
-    public TextAsset Atlas;
+    public Texture2D Texture;
 
-    private JSONNode AtlasNode;
-    private float AtlasWidth = 1.0f;
-    private float AtlasHeight = 1.0f;
+    private Sprite[] sprites;
 
 	// Use this for initialization
 	void Start ()
     {
-        //Load Texture Atlas data
-        AtlasNode = JSON.Parse(Atlas.text);
-        var size = AtlasNode["meta"]["size"];
-        AtlasWidth = size["w"].AsFloat;
-        AtlasHeight = size["h"].AsFloat;
+        string spriteSheet = AssetDatabase.GetAssetPath(Texture);
+        sprites = AssetDatabase.LoadAllAssetsAtPath(spriteSheet).OfType<Sprite>().ToArray();
 
         for (int x = 0; x < NumberOfStacks; x++)
         {
@@ -36,11 +33,26 @@ public class BlockBuilder : MonoBehaviour
                 var obj = (Transform)Instantiate(Block, new Vector3(x * DistanceBetweenStacks, 0.5f + i, 0), Quaternion.AngleAxis(Random.value * RotationVariation, new Vector3(0, 1, 0)));
                 var mesh = (obj.GetComponent("MeshFilter") as MeshFilter).mesh;
 
+                var mr = obj.GetComponent<MeshRenderer>();
 
-                ApplyUV(mesh, GetRandomFrame(), Sides.Front);
-                ApplyUV(mesh, GetRandomFrame(), Sides.Back);
-                ApplyUV(mesh, GetRandomFrame(), Sides.Left);
-                ApplyUV(mesh, GetRandomFrame(), Sides.Right);
+
+                ApplyUV(mesh, GetRandomSprite(), Sides.Front);
+                ApplyUV(mesh, GetRandomSprite(), Sides.Back);
+                ApplyUV(mesh, GetRandomSprite(), Sides.Left);
+                ApplyUV(mesh, GetRandomSprite(), Sides.Right);
+
+                if (i==0 && x==0)
+                {
+                    var s = (Transform)Instantiate(Selection);
+
+                    var localOffset = new Vector3(0, 0, -0.501f);
+                    var worldOffset = obj.rotation * localOffset;
+                    var spawnPosition = obj.position + worldOffset;
+
+                    s.transform.position = spawnPosition;
+                    s.transform.forward = obj.forward;
+                    s.transform.parent = obj.transform;
+                }
 
             }
         }
@@ -53,58 +65,58 @@ public class BlockBuilder : MonoBehaviour
 	
 	}
 
-    private JSONNode GetRandomFrame()
+    private int GetRandomSprite()
     {
 
-        int nbr = (int)(Random.value * 7 + 1);
-        return AtlasNode["frames"][nbr + ".png"]["frame"];
+        return (int)(Random.value * 7 + 1);
     }
 
-    private void ApplyUV(Mesh mesh, JSONNode frame, Sides side)
+    private void ApplyUV(Mesh mesh, int spriteNbr, Sides side)
     {
+        var rect = sprites[spriteNbr].textureRect;
         var uvs = mesh.uv;
         switch (side)
         {
             case Sides.Front:
-                uvs[0] = CreateUV(frame["x"].AsFloat, frame["y"].AsFloat + frame["h"].AsFloat);
-                uvs[1] = CreateUV(frame["x"].AsFloat + frame["w"].AsFloat, frame["y"].AsFloat + frame["h"].AsFloat);
-                uvs[2] = CreateUV(frame["x"].AsFloat, frame["y"].AsFloat);
-                uvs[3] = CreateUV(frame["x"].AsFloat + frame["w"].AsFloat, frame["y"].AsFloat);
+                uvs[0] = CreateUV(rect.x, rect.y);
+                uvs[1] = CreateUV(rect.xMax, rect.y);
+                uvs[2] = CreateUV(rect.x, rect.yMax);
+                uvs[3] = CreateUV(rect.xMax, rect.yMax);
                 break;
 
             case Sides.Back:
-                uvs[10] = CreateUV(frame["x"].AsFloat + frame["w"].AsFloat, frame["y"].AsFloat);
-                uvs[11] = CreateUV(frame["x"].AsFloat,  frame["y"].AsFloat);
-                uvs[6] = CreateUV(frame["x"].AsFloat + frame["w"].AsFloat, frame["y"].AsFloat + frame["h"].AsFloat);
-                uvs[7] = CreateUV(frame["x"].AsFloat, frame["y"].AsFloat + frame["h"].AsFloat);
+                uvs[10] = CreateUV(rect.xMax, rect.yMax);
+                uvs[11] = CreateUV(rect.x, rect.yMax);
+                uvs[6] = CreateUV(rect.xMax, rect.y);
+                uvs[7] = CreateUV(rect.x, rect.y);
                 break;
 
             case Sides.Left:
-                uvs[20] = CreateUV(frame["x"].AsFloat, frame["y"].AsFloat + frame["h"].AsFloat);
-                uvs[22] = CreateUV(frame["x"].AsFloat + frame["w"].AsFloat, frame["y"].AsFloat + frame["h"].AsFloat);
-                uvs[23] = CreateUV(frame["x"].AsFloat, frame["y"].AsFloat);
-                uvs[21] = CreateUV(frame["x"].AsFloat + frame["w"].AsFloat, frame["y"].AsFloat);
+                uvs[20] = CreateUV(rect.x, rect.y);
+                uvs[22] = CreateUV(rect.xMax, rect.y);
+                uvs[23] = CreateUV(rect.x, rect.yMax);
+                uvs[21] = CreateUV(rect.xMax, rect.yMax);
                 break;
 
             case Sides.Right:
-                uvs[16] = CreateUV(frame["x"].AsFloat, frame["y"].AsFloat + frame["h"].AsFloat);
-                uvs[18] = CreateUV(frame["x"].AsFloat + frame["w"].AsFloat, frame["y"].AsFloat + frame["h"].AsFloat);
-                uvs[19] = CreateUV(frame["x"].AsFloat, frame["y"].AsFloat);
-                uvs[17] = CreateUV(frame["x"].AsFloat + frame["w"].AsFloat, frame["y"].AsFloat);
+                uvs[16] = CreateUV(rect.x, rect.y);
+                uvs[18] = CreateUV(rect.xMax, rect.y);
+                uvs[19] = CreateUV(rect.x, rect.yMax);
+                uvs[17] = CreateUV(rect.xMax, rect.yMax);
                 break;
 
             case Sides.Top:
-                uvs[8] = CreateUV(frame["x"].AsFloat, frame["y"].AsFloat + frame["h"].AsFloat);
-                uvs[9] = CreateUV(frame["x"].AsFloat + frame["w"].AsFloat, frame["y"].AsFloat + frame["h"].AsFloat);
-                uvs[4] = CreateUV(frame["x"].AsFloat, frame["y"].AsFloat);
-                uvs[5] = CreateUV(frame["x"].AsFloat + frame["w"].AsFloat, frame["y"].AsFloat);
+                uvs[8] = CreateUV(rect.x, rect.yMax);
+                uvs[9] = CreateUV(rect.xMax, rect.yMax);
+                uvs[4] = CreateUV(rect.x, rect.y);
+                uvs[5] = CreateUV(rect.xMax, rect.y);
                 break;
 
             case Sides.Bottom:
-                uvs[12] = CreateUV(frame["x"].AsFloat, frame["y"].AsFloat + frame["h"].AsFloat);
-                uvs[14] = CreateUV(frame["x"].AsFloat + frame["w"].AsFloat, frame["y"].AsFloat + frame["h"].AsFloat);
-                uvs[15] = CreateUV(frame["x"].AsFloat, frame["y"].AsFloat);
-                uvs[13] = CreateUV(frame["x"].AsFloat + frame["w"].AsFloat, frame["y"].AsFloat);
+                uvs[12] = CreateUV(rect.x, rect.yMax);
+                uvs[14] = CreateUV(rect.xMax, rect.yMax);
+                uvs[15] = CreateUV(rect.x, rect.y);
+                uvs[13] = CreateUV(rect.xMax, rect.y);
                 break;
         }
         mesh.uv = uvs;
@@ -112,6 +124,6 @@ public class BlockBuilder : MonoBehaviour
 
     private Vector2 CreateUV(float x, float y)
     {
-        return new Vector2(x / AtlasWidth, 1.0f - y / AtlasHeight);
+        return new Vector2(x / Texture.width, y / Texture.height);
     }
 }

@@ -114,11 +114,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Block: {fileID: 400000, guid: 4e204a495fc30734bbd0401330e9aaa9, type: 2}
+  Selection: {fileID: 400000, guid: f7deef1f949b18f49b924767c97d6d0a, type: 2}
   NumberOfStacks: 4
   DistanceBetweenStacks: 2
   StackHeight: 10
   RotationVariation: 45
-  Atlas: {fileID: 4900000, guid: 203a782bcf5545141b0061be0e8ff9d1, type: 3}
+  Texture: {fileID: 2800000, guid: 269f6de5472caeb4eb85bc22c4b51930, type: 3}
 --- !u!1 &844160395
 GameObject:
   m_ObjectHideFlags: 0
@@ -264,6 +265,7 @@ GameObject:
   - 92: {fileID: 1103985123}
   - 124: {fileID: 1103985122}
   - 81: {fileID: 1103985121}
+  - 114: {fileID: 1103985126}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -336,6 +338,17 @@ Transform:
   m_Children: []
   m_Father: {fileID: 844160396}
   m_RootOrder: 0
+--- !u!114 &1103985126
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1103985120}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e520b50b707d0864db2888542c3bc405, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1575460183
 GameObject:
   m_ObjectHideFlags: 0
