@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using System.Linq;
 using System.Collections;
-using UnityEditor;
 
 public enum Sides
 {
@@ -18,13 +17,18 @@ public class BlockBuilder : MonoBehaviour
     public float RotationVariation = 1.0f;
     public Texture2D Texture;
 
-    private Sprite[] sprites;
+    private Rect[] sprites = new Rect[64];
 
 	// Use this for initialization
-	void Start ()
+    void Start()
     {
-        string spriteSheet = AssetDatabase.GetAssetPath(Texture);
-        sprites = AssetDatabase.LoadAllAssetsAtPath(spriteSheet).OfType<Sprite>().ToArray();
+        //Generating Sprite Texture Coordinates
+        for (int i = 0; i < 64; i++)
+        {
+            sprites[i] = new Rect((float)((i % 8) * 256 + 1), (float)(((i) / 8) * 256 + 1), 254.0f, 254.0f);
+            sprites[i] = new Rect((float)((i % 8) * 256 + 1), (float)((i / 8) * 256 + 1), 254, 254);
+        }
+
 
         for (int x = 0; x < NumberOfStacks; x++)
         {
@@ -40,8 +44,10 @@ public class BlockBuilder : MonoBehaviour
                 ApplyUV(mesh, GetRandomSprite(), Sides.Back);
                 ApplyUV(mesh, GetRandomSprite(), Sides.Left);
                 ApplyUV(mesh, GetRandomSprite(), Sides.Right);
+                ApplyUV(mesh, 0, Sides.Top);
+                ApplyUV(mesh, 0, Sides.Bottom);
 
-                if (i==0 && x==0)
+                if (i == 0 && x == 0)
                 {
                     var s = (Transform)Instantiate(Selection);
 
@@ -57,7 +63,7 @@ public class BlockBuilder : MonoBehaviour
             }
         }
 
-	}
+    }
 
     // Update is called once per frame
     void Update()
@@ -73,50 +79,50 @@ public class BlockBuilder : MonoBehaviour
 
     private void ApplyUV(Mesh mesh, int spriteNbr, Sides side)
     {
-        var rect = sprites[spriteNbr].textureRect;
+        var rect = sprites[spriteNbr];
         var uvs = mesh.uv;
         switch (side)
         {
             case Sides.Front:
-                uvs[0] = CreateUV(rect.x, rect.y);
-                uvs[1] = CreateUV(rect.xMax, rect.y);
-                uvs[2] = CreateUV(rect.x, rect.yMax);
-                uvs[3] = CreateUV(rect.xMax, rect.yMax);
+                uvs[0] = CreateUV(rect.x, rect.yMax);
+                uvs[1] = CreateUV(rect.xMax, rect.yMax);
+                uvs[2] = CreateUV(rect.x, rect.y);
+                uvs[3] = CreateUV(rect.xMax, rect.y);
                 break;
 
             case Sides.Back:
-                uvs[10] = CreateUV(rect.xMax, rect.yMax);
-                uvs[11] = CreateUV(rect.x, rect.yMax);
-                uvs[6] = CreateUV(rect.xMax, rect.y);
-                uvs[7] = CreateUV(rect.x, rect.y);
+                uvs[10] = CreateUV(rect.xMax, rect.y);
+                uvs[11] = CreateUV(rect.x, rect.y);
+                uvs[6] = CreateUV(rect.xMax, rect.yMax);
+                uvs[7] = CreateUV(rect.x, rect.yMax);
                 break;
 
             case Sides.Left:
-                uvs[20] = CreateUV(rect.x, rect.y);
-                uvs[22] = CreateUV(rect.xMax, rect.y);
-                uvs[23] = CreateUV(rect.x, rect.yMax);
-                uvs[21] = CreateUV(rect.xMax, rect.yMax);
+                uvs[20] = CreateUV(rect.x, rect.yMax);
+                uvs[22] = CreateUV(rect.xMax, rect.yMax);
+                uvs[23] = CreateUV(rect.x, rect.y);
+                uvs[21] = CreateUV(rect.xMax, rect.y);
                 break;
 
             case Sides.Right:
-                uvs[16] = CreateUV(rect.x, rect.y);
-                uvs[18] = CreateUV(rect.xMax, rect.y);
-                uvs[19] = CreateUV(rect.x, rect.yMax);
-                uvs[17] = CreateUV(rect.xMax, rect.yMax);
+                uvs[16] = CreateUV(rect.x, rect.yMax);
+                uvs[18] = CreateUV(rect.xMax, rect.yMax);
+                uvs[19] = CreateUV(rect.x, rect.y);
+                uvs[17] = CreateUV(rect.xMax, rect.y);
                 break;
 
             case Sides.Top:
-                uvs[8] = CreateUV(rect.x, rect.yMax);
-                uvs[9] = CreateUV(rect.xMax, rect.yMax);
-                uvs[4] = CreateUV(rect.x, rect.y);
-                uvs[5] = CreateUV(rect.xMax, rect.y);
+                uvs[8] = CreateUV(rect.x, rect.y);
+                uvs[9] = CreateUV(rect.xMax, rect.y);
+                uvs[4] = CreateUV(rect.x, rect.yMax);
+                uvs[5] = CreateUV(rect.xMax, rect.yMax);
                 break;
 
             case Sides.Bottom:
-                uvs[12] = CreateUV(rect.x, rect.yMax);
-                uvs[14] = CreateUV(rect.xMax, rect.yMax);
-                uvs[15] = CreateUV(rect.x, rect.y);
-                uvs[13] = CreateUV(rect.xMax, rect.y);
+                uvs[12] = CreateUV(rect.x, rect.y);
+                uvs[14] = CreateUV(rect.xMax, rect.y);
+                uvs[15] = CreateUV(rect.x, rect.yMax);
+                uvs[13] = CreateUV(rect.xMax, rect.yMax);
                 break;
         }
         mesh.uv = uvs;
@@ -124,6 +130,6 @@ public class BlockBuilder : MonoBehaviour
 
     private Vector2 CreateUV(float x, float y)
     {
-        return new Vector2(x / Texture.width, y / Texture.height);
+        return new Vector2(x / Texture.width, (Texture.height - y) / Texture.height);
     }
 }
