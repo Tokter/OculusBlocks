@@ -113,13 +113,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10b4ae72a647dec4caa78fd371ba205a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Block: {fileID: 400000, guid: 4e204a495fc30734bbd0401330e9aaa9, type: 2}
-  Selection: {fileID: 400000, guid: f7deef1f949b18f49b924767c97d6d0a, type: 2}
+  BlockPrefab: {fileID: 400000, guid: 4e204a495fc30734bbd0401330e9aaa9, type: 2}
+  SelectionPrefab: {fileID: 400000, guid: 44f0b0ed7fa1e49498c8305412600346, type: 2}
   NumberOfStacks: 4
   DistanceBetweenStacks: 2
   StackHeight: 10
   RotationVariation: 45
-  Texture: {fileID: 2800000, guid: 269f6de5472caeb4eb85bc22c4b51930, type: 3}
 --- !u!1 &844160395
 GameObject:
   m_ObjectHideFlags: 0

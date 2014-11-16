@@ -19,6 +19,7 @@ public class FindFace : MonoBehaviour
 
         if (Physics.Raycast(transform.position, transform.forward * 50, out Hit, 50))
         {
+            BlockBuilder.Select(Hit);
             //Hit.transform.localScale = new Vector3(2, 2, 2);
         }
     }
