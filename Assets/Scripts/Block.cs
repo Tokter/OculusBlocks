@@ -52,7 +52,7 @@ namespace Assets.Scripts
             set { if (!_sides.ContainsKey(side)) _sides.Add(side, value); else _sides[side] = value; }
         }
 
-        public Block(Transform blockPrefab, Transform selectionPrefab, Vector3 position, Quaternion rotation)
+        public Block(Transform blockPrefab, Vector3 position, Quaternion rotation)
         {          
             if (sprites == null) //Generating Sprite Texture Coordinates
             {            
@@ -66,20 +66,6 @@ namespace Assets.Scripts
             //Generate Block
             _object = Object.Instantiate(blockPrefab, position, rotation);
             var objTransform = _object as Transform;
-
-            //Generate Selection Faces
-            var s = Object.Instantiate(selectionPrefab);
-            var sTransform = s as Transform;
-
-            var localOffset = new Vector3(0, 0, -0.501f);
-            var worldOffset = objTransform.rotation * localOffset;
-            var spawnPosition = objTransform.position + worldOffset;
-
-            sTransform.transform.position = spawnPosition;
-            sTransform.transform.forward = objTransform.forward;
-            sTransform.transform.parent = objTransform.transform;
-
-            this[SideType.Back].Selection = s;
 
             this[SideType.Bottom].Type = 0;
             this[SideType.Top].Type = 0;

@@ -114,7 +114,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   BlockPrefab: {fileID: 400000, guid: 4e204a495fc30734bbd0401330e9aaa9, type: 2}
-  SelectionPrefab: {fileID: 400000, guid: 44f0b0ed7fa1e49498c8305412600346, type: 2}
   NumberOfStacks: 4
   DistanceBetweenStacks: 2
   StackHeight: 10
@@ -359,7 +358,7 @@ GameObject:
   - 33: {fileID: 1575460186}
   - 65: {fileID: 1575460185}
   - 23: {fileID: 1575460184}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Base
   m_TagString: Untagged
   m_Icon: {fileID: 0}

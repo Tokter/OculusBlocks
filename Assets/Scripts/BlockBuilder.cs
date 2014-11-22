@@ -8,7 +8,6 @@ using System.Collections.Generic;
 public class BlockBuilder : MonoBehaviour
 {
     public Transform BlockPrefab;
-    public Transform SelectionPrefab;
     public int NumberOfStacks = 4;
     public float DistanceBetweenStacks = 2.0f;
     public int StackHeight = 10;
@@ -26,7 +25,7 @@ public class BlockBuilder : MonoBehaviour
         {
             for (int i = 0; i < StackHeight; i++)
             {
-                var block = new Block(BlockPrefab, SelectionPrefab, new Vector3(x * DistanceBetweenStacks, 0.5f + i, 0), Quaternion.AngleAxis(Random.value * RotationVariation, new Vector3(0, 1, 0)));
+                var block = new Block(BlockPrefab, new Vector3(x * DistanceBetweenStacks, 0.5f + i, 0), Quaternion.AngleAxis(Random.value * RotationVariation, new Vector3(0, 1, 0)));
                 blocks.Add(block.Object.GetInstanceID(), block);
                 
                 
@@ -47,21 +46,13 @@ public class BlockBuilder : MonoBehaviour
 
     }
 
-    private static int lastHit = 0;
     public static void Select(RaycastHit hit)
     {
-        var currentHit = hit.transform.GetInstanceID();
-        if (currentHit != lastHit)
-        {
-            lastHit = currentHit;
+        var selection = hit.collider.gameObject;
 
-            var t = blocks.Keys.Where(obj => obj == currentHit).Select(obj => blocks[obj]).FirstOrDefault();
-
-            if (t != null)
-            {
-                t[SideType.Back].Selected = !t[SideType.Back].Selected;
-            }
-        }
+        selection.renderer.enabled = !selection.renderer.enabled;
+        var effect = selection.transform.GetChild(0).gameObject;
+        effect.renderer.enabled = selection.renderer.enabled;
     }
 
     // Update is called once per frame
